@@ -1,0 +1,1 @@
+# atomic-term-symbol-calculator
