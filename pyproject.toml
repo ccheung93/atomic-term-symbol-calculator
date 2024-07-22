@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "atomic_term_symbol_calculator"
+dynamic = ["version"]
+dependencies = [
+  "numpy",
+  "pandas",
+  "itertools",
+  "re",
+  "fractions"
+]
+authors = [
+  { name="Charles Cheung", email="ccheung@udel.edu"}
+]
+description = "an atomic term symbol calculator"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent", 
+  "Private :: Do Not Upload",
+]
+
+[tool.hatch]
+version.path = "src/atomic_term_symbol_calculator/__init__.py"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+"Home-page" = "https://ccheung93.github.io/notes/term_symbols/"
+"Source Code" = "https://github.com/ccheung93/atomic-term-symbol-calculator"
