@@ -195,8 +195,8 @@ def calc_term_symbols(configuration):
                 reduced_configs.append(reduced_config)
                 irr_configs.append(irr_config)
     
-    # assign max value of m_l
-    ml_max = 2*max(ml)+1
+    # assign max value of m_l - need to account for sum of all possible ml contributions
+    ml_max = sum(abs(ml_val) for ml_val in ml)
     
     # create a table of all possible different microstates
     # each row represents a total orbital magnetic quantum number

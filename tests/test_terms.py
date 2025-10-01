@@ -196,3 +196,188 @@ class TestEdgeCasesAndValidation:
         assert 'S' in term_letters
         assert 'D' in term_letters
         assert 'P' in term_letters
+
+class TestComplexConfigurations:
+    """Test cases for complex electron configurations that previously failed"""
+    
+    def test_d5_configuration(self):
+        """Test d5 configuration that previously caused KeyError -6"""
+        result = calc_term_symbols("3d5")
+        
+        # d5 should have many terms including high-spin sextet
+        assert len(result) > 20
+        
+        # Check for expected high-spin ground state
+        multiplicities = [int(term[0]) for term in result]
+        assert 6 in multiplicities  # Sextet state (2S+1 = 6, so S = 5/2)
+        
+        # Check for ground state term 6S5/2
+        assert "6S5/2" in result
+        
+        # Check for other expected terms
+        term_letters = [term[1] for term in result]
+        expected_letters = ['S', 'P', 'D', 'F', 'G', 'H', 'I']
+        for letter in expected_letters:
+            assert letter in term_letters, f"Expected term symbol with {letter} not found"
+    
+    def test_d6_configuration(self):
+        """Test d6 configuration"""
+        result = calc_term_symbols("3d6")
+        assert len(result) > 10
+        assert isinstance(result, list)
+        
+        # d6 should have quintet states
+        multiplicities = [int(term[0]) for term in result]
+        assert 5 in multiplicities
+    
+    def test_d9_configuration(self):
+        """Test d9 configuration"""
+        result = calc_term_symbols("3d9")
+        assert len(result) == 2  # d9 has same terms as d1 (electron-hole duality)
+        assert "2D3/2" in result
+        assert "2D5/2" in result
+
+class TestFOrbitalConfigurations:
+    """Test cases for f orbital electron configurations"""
+    
+    def test_f1_configuration(self):
+        """Test f1 configuration"""
+        result = calc_term_symbols("4f1")
+        assert len(result) == 2
+        assert "2F5/2" in result
+        assert "2F7/2" in result
+        
+        # All should be doublets
+        multiplicities = [int(term[0]) for term in result]
+        assert all(mult == 2 for mult in multiplicities)
+    
+    def test_f2_configuration(self):
+        """Test f2 configuration"""
+        result = calc_term_symbols("4f2")
+        
+        # f2 should have multiple terms
+        assert len(result) > 5
+        
+        # Should include both singlet and triplet states
+        multiplicities = [int(term[0]) for term in result]
+        assert 1 in multiplicities  # Singlet
+        assert 3 in multiplicities  # Triplet
+        
+        # Check for expected term symbols
+        term_letters = [term[1] for term in result]
+        for letter in ['S', 'F', 'H']:  # At minimum these should be present
+            assert letter in term_letters
+    
+    def test_f3_configuration(self):
+        """Test f3 configuration"""
+        result = calc_term_symbols("4f3")
+        
+        # f3 should have many terms
+        assert len(result) > 10
+        
+        # Should have quartet ground state
+        multiplicities = [int(term[0]) for term in result]
+        assert 4 in multiplicities  # Quartet (2S+1 = 4, so S = 3/2)
+        
+        # Should have various L values
+        term_letters = [term[1] for term in result]
+        high_L_letters = ['I', 'H', 'G', 'F']
+        assert any(letter in term_letters for letter in high_L_letters)
+    
+    def test_f7_configuration(self):
+        """Test f7 configuration (half-filled f shell)"""
+        result = calc_term_symbols("4f7")
+        
+        # f7 (half-filled) should have high-spin ground state
+        multiplicities = [int(term[0]) for term in result]
+        assert 8 in multiplicities  # Octet (2S+1 = 8, so S = 7/2)
+        
+        # Should have many terms due to complexity
+        assert len(result) > 50
+        
+        # Ground state should be 8S7/2
+        assert "8S7/2" in result
+
+class TestLargeMagneticRangeConfigurations:
+    """Test configurations that require large ML ranges"""
+    
+    def test_multiple_d_orbitals(self):
+        """Test configurations with multiple d orbital occupancies"""
+        # These test the ML range fix
+        configs_to_test = [
+            ("3d4", 10),   # Should have multiple terms
+            ("3d5", 20),   # Fixed KeyError -6 issue  
+            ("3d6", 10),   # Should work with large ML range
+            ("3d7", 10),   # Should work
+            ("3d8", 5),    # Fewer terms (getting closer to filled)
+        ]
+        
+        for config, min_terms in configs_to_test:
+            result = calc_term_symbols(config)
+            assert len(result) >= min_terms, f"{config} should have at least {min_terms} terms, got {len(result)}"
+            assert all(isinstance(term, str) for term in result)
+    
+    def test_mixed_high_l_orbitals(self):
+        """Test mixed configurations with high angular momentum"""
+        # Test configurations that create large ML ranges
+        test_configs = [
+            "3d1.4f1",     # d + f combination
+            "4f2.5d1",     # f + d combination  
+        ]
+        
+        for config in test_configs:
+            result = calc_term_symbols(config)
+            assert len(result) > 0
+            assert isinstance(result, list)
+            
+            # Verify format
+            import re
+            pattern = r'^\d+[SPDFGHIKLMNOQRTUVWXYZ]\d+(/\d+)?$'
+            for term in result:
+                assert re.match(pattern, term), f"Term {term} doesn't match expected format"
+    
+    def test_ml_range_calculation_correctness(self):
+        """Test that ML range calculation handles all orbital types correctly"""
+        from atomic_term_symbol_calculator.terms import calc_term_symbols
+        
+        # These configurations should not cause IndexErrors
+        problematic_configs = [
+            "4f5",     # Large f configuration
+            "5f3",     # Different shell f orbital
+            "6d5",     # Different shell d orbital
+        ]
+        
+        for config in problematic_configs:
+            try:
+                result = calc_term_symbols(config)
+                assert len(result) > 0, f"Configuration {config} should return some terms"
+            except (KeyError, IndexError) as e:
+                assert False, f"Configuration {config} caused ML range error: {e}"
+
+class TestElectronHoleDuality:
+    """Test electron-hole duality relationships"""
+    
+    def test_d1_d9_duality(self):
+        """Test that d1 and d9 have the same terms"""
+        d1_terms = set(calc_term_symbols("3d1"))
+        d9_terms = set(calc_term_symbols("3d9"))
+        assert d1_terms == d9_terms
+    
+    def test_d2_d8_duality(self):
+        """Test that d2 and d8 have similar term structures"""
+        d2_terms = calc_term_symbols("3d2")
+        d8_terms = calc_term_symbols("3d8")
+        
+        # Should have same number of terms
+        assert len(d2_terms) == len(d8_terms)
+        
+        # Should have same term letters (though J values may differ)
+        d2_letters = sorted([term[1] for term in d2_terms])
+        d8_letters = sorted([term[1] for term in d8_terms])
+        assert d2_letters == d8_letters
+    
+    def test_f1_f13_duality(self):
+        """Test that f1 and f13 have the same terms"""
+        f1_terms = set(calc_term_symbols("4f1"))
+        f13_terms = set(calc_term_symbols("4f13"))
+        assert f1_terms == f13_terms
