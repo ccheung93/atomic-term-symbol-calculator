@@ -104,6 +104,10 @@ def calc_term_symbols(configuration):
         occupancies[l] = qq
         active_orbitals.append(l)
         
+    # If no active orbitals, i.e. all orbitals filled, term would be 1S0
+    if not active_orbitals:
+        return ['1S0']
+        
     # All possible values of m_s. We work with 2*m_s instead of m_s so that we only have to handle integers
     ms2 = list(range(-num_electrons,num_electrons+1))
     if num_electrons % 2 == 0:
