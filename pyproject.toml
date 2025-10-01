@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "atomic-term-symbol-calculator"
+name = "term-symbols"
 dynamic = ["version"]
 dependencies = [
   "numpy",
@@ -35,7 +35,10 @@ classifiers = [
 ]
 
 [tool.hatch]
-version.path = "src/atomic_term_symbol_calculator/__init__.py"
+version.path = "src/term_symbols/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/term_symbols"]
 
 [tool.pytest.ini_options]
 pythonpath = [
@@ -46,7 +49,7 @@ pythonpath = [
 test = ["pytest"]
 
 [project.scripts]
-atomic-term-calculator = "atomic_term_symbol_calculator.terms:main"
+term-symbols = "term_symbols.terms:main"
 
 [project.urls]
 "Homepage" = "https://ccheung93.github.io/notes/term_symbols/"

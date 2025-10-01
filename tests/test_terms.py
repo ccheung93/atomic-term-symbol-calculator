@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from atomic_term_symbol_calculator.terms import calc_microstates, calc_term_symbols
+from term_symbols.terms import calc_microstates, calc_term_symbols
 
 class TestCalcMicrostates:
     """Test cases for calc_microstates function"""
@@ -338,7 +338,7 @@ class TestLargeMagneticRangeConfigurations:
     
     def test_ml_range_calculation_correctness(self):
         """Test that ML range calculation handles all orbital types correctly"""
-        from atomic_term_symbol_calculator.terms import calc_term_symbols
+        from term_symbols.terms import calc_term_symbols
         
         # These configurations should not cause IndexErrors
         problematic_configs = [

@@ -2,6 +2,21 @@
 
 A Python package for calculating all possible atomic term symbols from electron configurations. This tool uses quantum mechanical principles to determine microstates and derive term symbols including J-coupling.
 
+## Quick Start
+
+```bash
+# Install from PyPI
+pip install term-symbols
+
+# Use in Python
+python -c "from term_symbols.terms import calc_term_symbols; print(calc_term_symbols('2p2'))"
+# Output: ['1D2', '3P0', '3P1', '3P2', '1S0']
+
+# Or use command line
+term-symbols
+# Enter configuration: 2p2
+```
+
 ## Features
 
 - Calculate total number of microstates for any electron configuration
@@ -13,6 +28,20 @@ A Python package for calculating all possible atomic term symbols from electron 
 - Flexible input format (space or dot separated orbitals)
 
 ## Installation
+
+### From PyPI (Recommended)
+
+Install the latest stable version from PyPI:
+
+```bash
+pip install term-symbols
+```
+
+To upgrade to the latest version:
+
+```bash
+pip install --upgrade term-symbols
+```
 
 ### From Source
 
@@ -49,10 +78,12 @@ pip install -e .[test]
 
 ## Usage
 
+After installation, you can use the package in several ways:
+
 ### As a Python Module
 
 ```python
-from atomic_term_symbol_calculator.terms import calc_term_symbols, calc_microstates
+from term_symbols.terms import calc_term_symbols, calc_microstates
 
 # Calculate term symbols for carbon (2p2)
 terms = calc_term_symbols("2p2")
@@ -77,7 +108,7 @@ print(terms)
 ### Command Line Usage
 
 ```bash
-python -m atomic_term_symbol_calculator.terms
+term-symbols
 # Enter configuration when prompted: 2p3
 ```
 
@@ -126,7 +157,7 @@ pytest tests/test_terms.py
 Run tests with coverage:
 
 ```bash
-pytest --cov=atomic_term_symbol_calculator
+pytest --cov=term_symbols
 ```
 
 ## Development
@@ -136,7 +167,7 @@ pytest --cov=atomic_term_symbol_calculator
 ```
 atomic-term-symbol-calculator/
 ├── src/
-│   └── atomic_term_symbol_calculator/
+│   └── term_symbols/
 │       ├── __init__.py          # Version info
 │       └── terms.py             # Main calculation functions
 ├── tests/
@@ -164,6 +195,10 @@ The calculator follows these steps:
 3. Add tests for new functionality
 4. Ensure all tests pass
 5. Submit a pull request
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history and release notes.
 
 ## License
 
