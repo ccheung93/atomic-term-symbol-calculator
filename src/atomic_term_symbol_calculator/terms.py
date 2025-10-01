@@ -254,8 +254,18 @@ def calc_term_symbols(configuration):
 
     return term_symbols
 
+def main():
+    """Main function for command-line interface"""
+    try:
+        config = input('Enter electron configuration: ')
+        terms = calc_term_symbols(config)
+        print(f'Number of terms: {len(terms)}')
+        print('Term symbols:', terms)
+    except KeyboardInterrupt:
+        print('\nExiting...')
+    except Exception as e:
+        print(f'Error: {e}')
+
 if __name__ == '__main__':
-    terms = calc_term_symbols(input('Enter configuration: '))
-    print('# of terms: ' + str(len(terms)))
-    print(terms)
+    main()
     
