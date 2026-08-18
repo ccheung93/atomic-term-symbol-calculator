@@ -63,7 +63,7 @@ def calc_term_symbols(configuration):
     print('Calculating atomic term symbols for ' + configuration + '...')
     
     # Separate the configuration into an array of orbitals
-    orbitals = configuration.replace(' ', '.').split('.')
+    orbitals = [orbital for orbital in configuration.replace(' ', '.').split('.') if orbital]
         
     # Define orbital angular momentum quantum numbers and letters, and max number of orbitals
     Ls = 'SPDFGHIKLMNOQRTUVWXYZ'
@@ -80,13 +80,12 @@ def calc_term_symbols(configuration):
     
     active_orbitals = []
     num_orbital_positions = []
-    configs = []
     occupancies = {}
     
     ml = [] # all possible values of ml = [-l, -l+1, ..., l-1, l] for each orbital
 
     for orbital in orbitals:
-        l = re.findall('[a-zA-Z]+', orbital)[0]
+        l = re.findall('[a-zA-Z]+', orbital)[0].lower()
         nn = int(re.findall('[0-9]+', orbital)[0])
         try:
             qq = int(re.findall('[0-9]+', orbital)[1])
@@ -95,8 +94,6 @@ def calc_term_symbols(configuration):
         # Check if shell is filled and skip to next orbital if filled
         if qq == max_occupancies[l]:
             continue
-        for i in range(int(qq)):
-            configs.append([nn,l])
         ml += list(range(-l_values[l], l_values[l]+1))
         num_orbital_positions.append(max_occupancies[l])
         num_microstates *= calc_microstates(max_occupancies[l], qq)
@@ -126,10 +123,7 @@ def calc_term_symbols(configuration):
     
     # Create an array of combinations of electron spins
     list_electrons = list(product(*[[-1,1]] * num_electrons))
-        
-    # number of zeros that should be found for each microstate configuration
-    num_zeros = num_orbital_positions - num_electrons
-        
+
     # loop over microstates
     for microstate in microstates:
         # loop over list of combinations of electron spins
@@ -167,7 +161,7 @@ def calc_term_symbols(configuration):
             reduced_config = [list(config[i:i + 2]) for i in range(0,len(config), 2)]
             
             for orbital in reduced_config:
-                if orbital[0] == orbital[1] and orbital[0] == -1 or orbital[0] == 1:
+                if orbital[0] == orbital[1] and (orbital[0] == -1 or orbital[0] == 1):
                     skip_config = True
             if skip_config:
                 continue
