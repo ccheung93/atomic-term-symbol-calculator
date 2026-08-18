@@ -101,8 +101,8 @@ def calc_term_symbols(configuration):
         num_orbital_positions.append(max_occupancies[l])
         num_microstates *= calc_microstates(max_occupancies[l], qq)
         num_electrons += qq
-        occupancies[l] = qq
-        active_orbitals.append(l)
+        occupancies[(nn, l)] = qq
+        active_orbitals.append((nn, l))
         
     # If no active orbitals, i.e. all orbitals filled, term would be 1S0
     if not active_orbitals:
@@ -146,13 +146,13 @@ def calc_term_symbols(configuration):
             actual_occupancies = {}
             
             first_active_orbital = active_orbitals[0]
-            actual_occupancies[first_active_orbital] = sum(abs(config[0:max_occupancies[first_active_orbital]]))
-            sum_occ = max_occupancies[first_active_orbital]
+            actual_occupancies[first_active_orbital] = sum(abs(config[0:max_occupancies[first_active_orbital[1]]]))
+            sum_occ = max_occupancies[first_active_orbital[1]]
             end_occ = sum_occ
             for active_index in range(1,len(active_orbitals)):
                 start_occ = end_occ
-                end_occ = sum_occ + max_occupancies[active_orbitals[active_index]]
-                sum_occ += max_occupancies[active_orbitals[active_index]]
+                end_occ = sum_occ + max_occupancies[active_orbitals[active_index][1]]
+                sum_occ += max_occupancies[active_orbitals[active_index][1]]
                 actual_occupancies[active_orbitals[active_index]] = sum(abs(config[start_occ:end_occ]))
 
             skip_config = False
@@ -195,8 +195,8 @@ def calc_term_symbols(configuration):
                 reduced_configs.append(reduced_config)
                 irr_configs.append(irr_config)
     
-    # assign max value of m_l - need to account for sum of all possible ml contributions
-    ml_max = sum(abs(ml_val) for ml_val in ml)
+    # assign max value of m_l
+    ml_max = sum(l_values[l] * qq for (_, l), qq in occupancies.items())
     
     # create a table of all possible different microstates
     # each row represents a total orbital magnetic quantum number
@@ -254,18 +254,8 @@ def calc_term_symbols(configuration):
 
     return term_symbols
 
-def main():
-    """Main function for command-line interface"""
-    try:
-        config = input('Enter electron configuration: ')
-        terms = calc_term_symbols(config)
-        print(f'Number of terms: {len(terms)}')
-        print('Term symbols:', terms)
-    except KeyboardInterrupt:
-        print('\nExiting...')
-    except Exception as e:
-        print(f'Error: {e}')
-
 if __name__ == '__main__':
-    main()
+    terms = calc_term_symbols(input('Enter configuration: '))
+    print('# of terms: ' + str(len(terms)))
+    print(terms)
     
