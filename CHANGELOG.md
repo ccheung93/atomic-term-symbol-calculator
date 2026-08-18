@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2026-08-18
+
+### Fixed
+- **Occupancy tracking for repeated angular momentum**: Orbitals are now keyed by `(n, l)` instead of `l` alone, so configurations with matching `l` but different `n` (e.g. `2p` and `3p` both present) are tracked independently instead of colliding.
+- **Pauli exclusion check**: Corrected an operator precedence bug in the same-spin check so it matches its intended logic.
+
+### Changed
+- Orbital letters in configuration strings are now case-insensitive (e.g. `2P2` is accepted).
+- Malformed whitespace in configuration strings (e.g. repeated spaces) no longer crashes parsing.
+
+### Removed
+- Dead code left over from earlier refactors (unused microstate list, unused variable).
+
 ## [0.1.4] - 2024-10-01
 
 ### BREAKING CHANGES
